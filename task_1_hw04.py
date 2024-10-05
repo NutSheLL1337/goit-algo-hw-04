@@ -1,34 +1,6 @@
 import time
 from functools import lru_cache
-
-# Python має дві вбудовані функції сортування: sorted і sort. 
-# Функції сортування Python використовують Timsort — гібридний алгоритм сортування, 
-# що поєднує в собі сортування злиттям і сортування вставками.
-
-
-# Порівняйте три алгоритми сортування: злиттям, вставками та Timsort за часом виконання. 
-# Аналіз повинен бути підтверджений емпіричними даними, отриманими шляхом тестування алгоритмів на різних наборах даних. 
-# Емпірично перевірте теоретичні оцінки складності алгоритмів, наприклад, сортуванням на великих масивах. Для заміру часу виконання алгоритмів використовуйте модуль timeit.
-
-# Покажіть, що поєднання сортування злиттям і сортування вставками робить алгоритм Timsort набагато ефективнішим, 
-# і саме з цієї причини програмісти, в більшості випадків, використовують вбудовані в Python алгоритми, а не кодують самі. 
-# Зробіть висновки.
-
-start = time.perf_counter()
-
-end = time.perf_counter()
-print("Plain version. Seconds taken: {:.7f}".format(end - start))
-
-start = time.perf_counter()
-fibonacci_recursive(n)
-end = time.perf_counter()
-print("Plain recursive version. Seconds taken: {:.7f}".format(end - start))
-
-start = time.perf_counter()
-fibonacci_lru(n)
-end = time.perf_counter()
-print("lru cache version. Seconds taken: {:.7f}".format(end - start))
-
+import random
 
 # Функція сортування злиттям
 def merge_sort(arr):
@@ -71,11 +43,15 @@ def merge(left, right):
     return result  # Повертаємо злитий масив
 
 
+print("Вимірюємо для звичайного масиву: ")
 # Приклад використання
 array = [12, 11, 13, 5, 6, 7]
+start = time.perf_counter()
 
 print(f"Given array is {array}")
 print(f"Sorted array is {merge_sort(array)}")
+end = time.perf_counter()
+print("Merge sort. Seconds taken: {:.7f}".format(end - start))
 
 
 def insertion_sort_recursive(arr, n):
@@ -92,16 +68,46 @@ def insertion_sort_recursive(arr, n):
     arr[j + 1] = key  # Вставляємо ключ на правильну позицію
     return arr  # Повертаємо відсортований масив
 
+
 # Використання рекурсивного сортування вставками
 array = [12, 11, 13, 5, 6, 7]
+start = time.perf_counter()
 print(f"Given array is {array}")
 print(f"Sorted array is {insertion_sort_recursive(array, len(array))}")
 
+end = time.perf_counter()
+print("Insertion sort. Seconds taken: {:.7f}".format(end - start))
 
-# Вбудований Timsort. sorted і sort
 
 # Використання вбудованих в python sorted and sort
-
 array = [12, 11, 13, 5, 6, 7]
+start = time.perf_counter()
 print(f"Given array is {array}")
-print(f"Sorted array is {insertion_sort_recursive(array, len(array))}")
+print(f"Sorted array is {sorted(array)}")
+end = time.perf_counter()
+print("Timsort. Seconds taken: {:.7f}".format(end - start))
+
+
+print("Вимірюємо для різних наборів даних: ")
+# Функція для вимірювання часу виконання
+def measure_time(sort_func, arr):
+    start = time.perf_counter()
+    sort_func(arr)
+    end = time.perf_counter()
+    return end - start
+
+# Генерація масиву випадкових чисел
+large_array = random.sample(range(100000), 10000)
+
+# Вимірювання часу для сортування злиттям
+merge_time = measure_time(merge_sort, large_array.copy())
+print(f"Merge sort. Time taken: {merge_time:.7f} seconds")
+
+# Вимірювання часу для сортування вставками (на невеликому масиві)
+insertion_time = measure_time(lambda arr: insertion_sort_recursive(arr, len(arr)), large_array[:100].copy())
+print(f"Insertion sort. Time taken: {insertion_time:.7f} seconds")
+
+# Вимірювання часу для вбудованого Timsort
+timsort_time = measure_time(sorted, large_array.copy())
+print(f"Timsort. Time taken: {timsort_time:.7f} seconds")
+print("Висновки:\nСортування вбудованого Timsort є найбільш ефективним по часу. \nВоно добре працює для різних масивів даних, як маленьких так і великих")
